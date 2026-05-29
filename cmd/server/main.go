@@ -7,6 +7,8 @@ import (
 	"github.com/alwismt/application-logging-audit-module/pkg/loggingaudit"
 )
 
+var version = "dev"
+
 func main() {
 	mod, err := loggingaudit.NewFromEnv()
 	if err != nil {

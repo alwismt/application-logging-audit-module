@@ -1,4 +1,4 @@
-.PHONY: run build tidy test test-integration test-all coverage migrate-up diagrams docker-up docker-up-postgres frontend-install frontend-dev frontend-build sync-swagger
+.PHONY: run build tidy test test-integration test-all coverage migrate-up diagrams docker-up docker-up-postgres frontend-install frontend-dev frontend-build sync-swagger release-binaries release-package release-check release-clean release
 
 run: sync-swagger
 	go run ./cmd/server
@@ -45,3 +45,17 @@ frontend-dev:
 
 frontend-build:
 	cd frontend && npm run build
+
+release-binaries:
+	VERSION=$${VERSION:-v1.0.0} ./scripts/build-binaries.sh
+
+release-package:
+	VERSION=$${VERSION:-v1.0.0} ./scripts/create-release-package.sh
+
+release-check:
+	VERSION=$${VERSION:-v1.0.0} ./scripts/check-release.sh
+
+release-clean:
+	rm -rf dist
+
+release: release-clean release-binaries release-package release-check

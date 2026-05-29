@@ -292,7 +292,7 @@ docker compose -f docker-compose.yml -f docker-compose.postgres.yml exec postgre
 
 ## Security note
 
-Admin authentication is for **CBSE demonstration only**. Production systems should use HTTPS, secure password policies, RBAC, refresh tokens, CSRF protection, and stronger session management. Passwords are bcrypt-hashed in `admin_users`, but this is not enterprise-grade security.
+Production systems should use HTTPS, secure password policies, RBAC, refresh tokens, CSRF protection, and stronger session management. Passwords are bcrypt-hashed in `admin_users`.
 
 ## Limitations
 
