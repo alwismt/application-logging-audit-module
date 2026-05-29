@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"application-logging-audit-module/internal/adminauth"
+	"github.com/alwismt/application-logging-audit-module/internal/adminauth"
 
 	"github.com/google/uuid"
 )

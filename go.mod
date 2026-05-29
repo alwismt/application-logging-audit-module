@@ -1,4 +1,4 @@
-module application-logging-audit-module
+module github.com/alwismt/application-logging-audit-module
 
 go 1.22
 

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"application-logging-audit-module/internal/common"
-	"application-logging-audit-module/internal/exporter"
-	"application-logging-audit-module/internal/logger"
+	"github.com/alwismt/application-logging-audit-module/internal/common"
+	"github.com/alwismt/application-logging-audit-module/internal/exporter"
+	"github.com/alwismt/application-logging-audit-module/internal/logger"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"

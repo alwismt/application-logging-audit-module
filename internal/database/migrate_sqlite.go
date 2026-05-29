@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	databasemigrations "application-logging-audit-module/database"
+	databasemigrations "github.com/alwismt/application-logging-audit-module/database"
 )
 
 func TablesExistSQLite(ctx context.Context, db *sql.DB) (bool, error) {

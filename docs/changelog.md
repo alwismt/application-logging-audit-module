@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Module path `github.com/alwismt/application-logging-audit-module` for `go get` / `go install`
+- Public package `pkg/loggingaudit` for embedding logger, audit, and HTTP routes in existing Go apps
+- Examples: `examples/basic_usage.go` (library), `examples/embed_router/main.go` (Chi mount)
+
 - Admin JWT authentication and `admin_users` table (default credentials `admin` / `12345678`)
 - React + Vite admin frontend with login, logs, audit views, filters, and export
 - CORS support, date-range query filters, Docker frontend service

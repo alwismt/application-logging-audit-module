@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	databasemigrations "application-logging-audit-module/database"
+	databasemigrations "github.com/alwismt/application-logging-audit-module/database"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

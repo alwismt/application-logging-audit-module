@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

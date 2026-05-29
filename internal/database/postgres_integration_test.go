@@ -6,7 +6,7 @@ import (
 	"context"
 	"testing"
 
-	"application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
 )
 
 func TestConnect(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"application-logging-audit-module/internal/app"
-	"application-logging-audit-module/internal/config"
-	"application-logging-audit-module/internal/swagger"
+	"github.com/alwismt/application-logging-audit-module/internal/app"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/swagger"
 
 	"github.com/go-chi/chi/v5"
 )

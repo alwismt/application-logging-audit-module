@@ -9,9 +9,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"application-logging-audit-module/internal/app"
-	"application-logging-audit-module/internal/config"
-	"application-logging-audit-module/internal/database"
+	"github.com/alwismt/application-logging-audit-module/internal/app"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/database"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

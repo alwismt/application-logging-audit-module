@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"application-logging-audit-module/internal/audit"
+	"github.com/alwismt/application-logging-audit-module/internal/audit"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"

@@ -3,9 +3,9 @@ package app
 import (
 	"net/http"
 
-	"application-logging-audit-module/internal/handler"
-	"application-logging-audit-module/internal/middleware"
-	"application-logging-audit-module/internal/swagger"
+	"github.com/alwismt/application-logging-audit-module/internal/handler"
+	"github.com/alwismt/application-logging-audit-module/internal/middleware"
+	"github.com/alwismt/application-logging-audit-module/internal/swagger"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"

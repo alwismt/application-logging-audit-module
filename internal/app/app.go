@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"application-logging-audit-module/internal/adminauth"
-	"application-logging-audit-module/internal/audit"
-	"application-logging-audit-module/internal/config"
-	"application-logging-audit-module/internal/database"
-	"application-logging-audit-module/internal/logger"
-	"application-logging-audit-module/internal/middleware"
+	"github.com/alwismt/application-logging-audit-module/internal/adminauth"
+	"github.com/alwismt/application-logging-audit-module/internal/audit"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/database"
+	"github.com/alwismt/application-logging-audit-module/internal/logger"
+	"github.com/alwismt/application-logging-audit-module/internal/middleware"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )

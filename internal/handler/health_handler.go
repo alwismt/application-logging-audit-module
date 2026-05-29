@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"application-logging-audit-module/internal/common"
+	"github.com/alwismt/application-logging-audit-module/internal/common"
 )
 
 type HealthHandler struct {

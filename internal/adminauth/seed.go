@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"application-logging-audit-module/internal/config"
+	"github.com/alwismt/application-logging-audit-module/internal/config"
 
 	"github.com/google/uuid"
 )

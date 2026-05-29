@@ -54,10 +54,11 @@ Provide a reusable Go component that developers can embed in applications to:
 - Persistence via SQLite (default) or PostgreSQL (`DB_DRIVER=postgres`)
 - Admin routes require JWT (from `POST /admin/login`) or `X-API-Key` / `Authorization: ApiKey` — demo credentials only; harden for production
 - Synchronous writes only (async logging documented as future work)
-- `internal/` packages are not importable from external modules without forking
+- External Go modules must use the public package `pkg/loggingaudit` (`go get github.com/alwismt/application-logging-audit-module`); `internal/` is not importable from other repos
 
 ## Important information for users
 
+- **Go library:** `import "github.com/alwismt/application-logging-audit-module/pkg/loggingaudit"` — provides `NewFromEnv`, `Handler`, `Run`, `Logger`, and `Auditor`
 - **SQLite (default):** run the binary, `make run`, or Docker with no `.env`; data goes to `SQLITE_PATH` (default `./data/logger.db`)
 - **PostgreSQL:** copy `.env.example` to `.env`, set `DB_DRIVER=postgres`, and configure `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
 - On first start the app auto-creates tables when they are missing (`DB_AUTO_MIGRATE=true`)

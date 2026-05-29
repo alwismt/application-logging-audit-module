@@ -51,9 +51,10 @@ The module uses **SQLite by default**—no separate database server. You only ne
 
 | Path | Best for | Go required? |
 |------|----------|----------------|
-| [Go project (source)](#option-1-go-project-source) | Developers embedding or hacking the module | Yes (1.22+) |
+| [Go project (source)](#option-1-go-project-source) | Developers cloning this repo | Yes (1.22+) |
 | [Pre-built binary](#option-2-pre-built-binary-no-go-required) | Any stack calling the REST API only | No |
 | [Docker](#option-3-docker-recommended) | Fastest full stack (API + optional UI) | No |
+| [Existing Go app (`go get`)](#option-4-use-in-an-existing-go-project-go-get) | Import as a library in your module | Yes (1.22+) |
 
 ### Option 1: Go project (source)
 
@@ -88,6 +89,57 @@ docker compose up --build
 ```
 
 SQLite data is stored in a Docker volume; no host database install. See [Quick start](#quick-start) below.
+
+### Option 4: Use in an existing Go project (`go get`)
+
+Add the module to your application:
+
+```bash
+go get github.com/alwismt/application-logging-audit-module@latest
+```
+
+Import the public package (do **not** import `internal/...` from outside this module):
+
+```go
+import "github.com/alwismt/application-logging-audit-module/pkg/loggingaudit"
+```
+
+**Standalone server** (same as `make run` / `cmd/server`):
+
+```go
+mod, err := loggingaudit.NewFromEnv()
+if err != nil { log.Fatal(err) }
+log.Fatal(mod.Run())
+```
+
+**Mount HTTP routes** in an existing router (`/health`, `/logs`, `/admin`):
+
+```go
+mod, err := loggingaudit.NewFromEnv()
+if err != nil { log.Fatal(err) }
+r.Mount("/", mod.Handler())
+```
+
+See [examples/embed_router/main.go](examples/embed_router/main.go).
+
+**Library only** (logger + audit, no HTTP server):
+
+```go
+mod, _ := loggingaudit.NewFromEnv()
+_ = mod.Logger().Info(ctx, "hello", nil)
+_ = mod.Auditor().Record(ctx, loggingaudit.AuditEvent{Action: "LOGIN", Status: "SUCCESS"})
+```
+
+See [examples/basic_usage.go](examples/basic_usage.go).
+
+| Command | Purpose |
+|---------|---------|
+| `go get github.com/alwismt/application-logging-audit-module@latest` | Add library dependency to your `go.mod` |
+| `go install github.com/alwismt/application-logging-audit-module/cmd/server@latest` | Install the standalone server binary to `$GOPATH/bin` |
+
+Until a Git tag is published, use `@main` or a commit pseudo-version instead of `@latest`.
+
+SQLite is the default: no `.env` required unless you switch to PostgreSQL or override settings.
 
 ### Database configuration
 
@@ -188,10 +240,14 @@ curl -H "Authorization: Bearer $TOKEN" \
   "http://localhost:8080/admin/logs/export?format=csv" -o logs.csv
 ```
 
-## Usage example
+## Usage examples
 
 ```bash
+# Public pkg/loggingaudit API (recommended for embedding)
 go run ./examples/basic_usage.go
+
+# Mount routes in Chi
+go run ./examples/embed_router/main.go
 ```
 
 ## Testing
@@ -242,7 +298,7 @@ Admin authentication is for **CBSE demonstration only**. Production systems shou
 
 - Synchronous database writes only
 - SQLite is suitable for local/demo; use PostgreSQL for production-like workloads
-- No `pkg/` public export path (use same module or fork)
+- External Go apps should import `pkg/loggingaudit` (not `internal/...`), or run this module as a separate HTTP service
 - Integration tests require running PostgreSQL
 
 ## License

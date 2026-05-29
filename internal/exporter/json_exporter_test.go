@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"application-logging-audit-module/internal/logger"
+	"github.com/alwismt/application-logging-audit-module/internal/logger"
 
 	"github.com/google/uuid"
 )

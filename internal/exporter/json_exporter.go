@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"application-logging-audit-module/internal/audit"
-	"application-logging-audit-module/internal/logger"
+	"github.com/alwismt/application-logging-audit-module/internal/audit"
+	"github.com/alwismt/application-logging-audit-module/internal/logger"
 )
 
 func ExportLogsJSON(entries []logger.LogEntry) ([]byte, error) {

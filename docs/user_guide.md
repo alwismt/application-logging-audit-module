@@ -61,6 +61,32 @@ Uses SQLite in a Docker volume; no `.env` required for the default stack.
 
 See [Environment files](#environment-files) below for all variables.
 
+### Option 4: Existing Go project (`go get`)
+
+```bash
+go get github.com/alwismt/application-logging-audit-module@latest
+```
+
+```go
+import "github.com/alwismt/application-logging-audit-module/pkg/loggingaudit"
+```
+
+| Goal | API |
+|------|-----|
+| Run standalone server | `mod, _ := loggingaudit.NewFromEnv(); mod.Run()` |
+| Mount routes on your router | `r.Mount("/", mod.Handler())` |
+| Logger + audit only | `mod.Logger()`, `mod.Auditor()` |
+
+Install CLI binary separately:
+
+```bash
+go install github.com/alwismt/application-logging-audit-module/cmd/server@latest
+```
+
+Examples: [examples/basic_usage.go](../examples/basic_usage.go), [examples/embed_router/main.go](../examples/embed_router/main.go).
+
+Do not import `internal/...` from another module; use `pkg/loggingaudit` only.
+
 ## 5-minute quick start (Docker, SQLite)
 
 One command — no `.env`, no Postgres, no Flyway:
@@ -158,16 +184,21 @@ Set `DB_AUTO_MIGRATE=false` in production if you manage schema externally (app f
 
 ## Using the component in your code
 
-See [examples/basic_usage.go](../examples/basic_usage.go). With SQLite (default):
+From another Go module, use the public API:
 
 ```go
-db, _ := database.ConnectSQLite(cfg.SQLitePath)
-_ = database.EnsureSchemaSQLite(ctx, db, true)
-logRepo := logger.NewSQLiteRepository(db)
-loggerSvc := logger.NewService(logRepo, "my-service", true, true)
+import "github.com/alwismt/application-logging-audit-module/pkg/loggingaudit"
+
+mod, err := loggingaudit.NewFromEnv()
+if err != nil { log.Fatal(err) }
+
+_ = mod.Logger().Info(ctx, "started", nil)
+_ = mod.Auditor().Record(ctx, loggingaudit.AuditEvent{
+    Action: "LOGIN", Status: "SUCCESS", Username: "alice",
+})
 ```
 
-With PostgreSQL, use `database.Connect`, `EnsureSchema`, and `NewPostgresRepository`.
+See [examples/basic_usage.go](../examples/basic_usage.go) and [examples/embed_router/main.go](../examples/embed_router/main.go).
 
 ## Testing
 

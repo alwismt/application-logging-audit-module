@@ -3,7 +3,7 @@ package logger
 import (
 	"time"
 
-	"application-logging-audit-module/internal/common"
+	"github.com/alwismt/application-logging-audit-module/internal/common"
 
 	"github.com/google/uuid"
 )

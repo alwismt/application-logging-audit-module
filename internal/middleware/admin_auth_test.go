@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"application-logging-audit-module/internal/adminauth"
+	"github.com/alwismt/application-logging-audit-module/internal/adminauth"
 )
 
 func TestAdminAuth_JWTAndAPIKey(t *testing.T) {

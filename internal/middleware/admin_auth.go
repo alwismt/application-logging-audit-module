@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"application-logging-audit-module/internal/adminauth"
-	"application-logging-audit-module/internal/common"
+	"github.com/alwismt/application-logging-audit-module/internal/adminauth"
+	"github.com/alwismt/application-logging-audit-module/internal/common"
 )
 
 type AdminAuth struct {

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"application-logging-audit-module/internal/common"
-	"application-logging-audit-module/internal/database"
+	"github.com/alwismt/application-logging-audit-module/internal/common"
+	"github.com/alwismt/application-logging-audit-module/internal/database"
 
 	"github.com/google/uuid"
 )
