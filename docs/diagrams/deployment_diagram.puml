@@ -1,0 +1,25 @@
+@startuml deployment_diagram
+node "Client Browser" as Browser
+node "Admin UI" as AdminUI
+
+node "Host machine" {
+  node "Docker Compose network" as Compose {
+    node "Go HTTP Server\n(API Gateway :8080)" as Server {
+      component "Application Logging\n& Audit Trail Module" as Module
+      component "EnsureSchema\n(Go migrations)" as Migrate
+    }
+    database "PostgreSQL\n(internal :5432)" as DB
+  }
+}
+
+Browser --> Server : "HTTP localhost:8080"
+AdminUI --> Server : "Admin API"
+Server --> Module
+Module --> Migrate
+Migrate --> DB : "SQL when tables missing"
+Module --> DB : "SQL (pgx)"
+note right of DB
+  Not published to host.
+  App uses DB_HOST=postgres
+end note
+@enduml

@@ -1,0 +1,12 @@
+.env
+.env.dev
+bin/
+coverage.out
+coverage.html
+*.exe
+.DS_Store
+.idea/
+.vscode/
+frontend/node_modules/
+frontend/dist/
+vendor/

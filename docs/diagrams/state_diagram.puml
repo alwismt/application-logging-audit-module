@@ -1,0 +1,13 @@
+@startuml state_diagram
+[*] --> Created : New log/audit entry
+
+Created --> Validated : validate level/action/status
+Created --> ValidationFailed : invalid fields
+
+Validated --> Stored : repository Insert OK
+Validated --> StorageFailed : database error
+
+Stored --> [*]
+ValidationFailed --> [*]
+StorageFailed --> [*]
+@enduml

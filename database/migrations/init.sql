@@ -1,0 +1,2 @@
+-- Baseline migration placeholder for Flyway.
+-- Application tables are created in V1_1__create_logging_audit_tables.sql

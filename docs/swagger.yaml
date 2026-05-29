@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: Application Logging & Audit Trail Module API
+  description: REST API for application logging, audit trails, and admin queries.
+  version: 1.0.0
+servers:
+  - url: /
+    description: Current host
+  - url: http://localhost:8080
+    description: Local development
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [System]
+      responses:
+        "200":
+          description: Service health (database may be down with status degraded)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok, degraded]
+                  database:
+                    type: string
+                    enum: [up, down]
+
+  /logs/log-info:
+    post:
+      summary: Create info log
+      tags: [Logs]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoLogRequest"
+      responses:
+        "201":
+          description: Logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /logs/log-error:
+    post:
+      summary: Create error log
+      tags: [Logs]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoLogRequest"
+      responses:
+        "201":
+          description: Logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /logs/audit-login:
+    post:
+      summary: Record login audit event
+      tags: [Logs]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoAuditLoginRequest"
+      responses:
+        "201":
+          description: Recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /logs/audit-update:
+    post:
+      summary: Record update audit event
+      tags: [Logs]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoAuditUpdateRequest"
+      responses:
+        "201":
+          description: Recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DemoStatusResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/login:
+    post:
+      summary: Admin login
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/logs:
+    get:
+      summary: List application logs
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/level"
+        - $ref: "#/components/parameters/user_id"
+        - $ref: "#/components/parameters/request_id"
+        - $ref: "#/components/parameters/source"
+        - $ref: "#/components/parameters/from"
+        - $ref: "#/components/parameters/to"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Paginated logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/logs/{id}:
+    get:
+      summary: Get log by ID
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Log entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogEntry"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/logs/export:
+    get:
+      summary: Export logs
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/level"
+        - $ref: "#/components/parameters/user_id"
+        - $ref: "#/components/parameters/request_id"
+        - $ref: "#/components/parameters/source"
+        - $ref: "#/components/parameters/from"
+        - $ref: "#/components/parameters/to"
+        - $ref: "#/components/parameters/format"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Exported file (JSON or CSV attachment)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogEntry"
+            text/csv:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/audit-events:
+    get:
+      summary: List audit events
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+        - $ref: "#/components/parameters/username"
+        - $ref: "#/components/parameters/action"
+        - $ref: "#/components/parameters/resource_type"
+        - $ref: "#/components/parameters/status"
+        - $ref: "#/components/parameters/request_id"
+        - $ref: "#/components/parameters/from"
+        - $ref: "#/components/parameters/to"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Paginated audit events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/audit-events/{id}:
+    get:
+      summary: Get audit event by ID
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Audit event
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditEvent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /admin/audit-events/export:
+    get:
+      summary: Export audit events
+      tags: [Admin]
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+        - $ref: "#/components/parameters/username"
+        - $ref: "#/components/parameters/action"
+        - $ref: "#/components/parameters/resource_type"
+        - $ref: "#/components/parameters/status"
+        - $ref: "#/components/parameters/request_id"
+        - $ref: "#/components/parameters/from"
+        - $ref: "#/components/parameters/to"
+        - $ref: "#/components/parameters/format"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Exported file (JSON or CSV attachment)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditEvent"
+            text/csv:
+              schema:
+                type: string
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        Send the admin API key via `X-API-Key` header, or use
+        `Authorization: ApiKey <ADMIN_API_KEY>`.
+
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: Missing or invalid credentials
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+  parameters:
+    from:
+      name: from
+      in: query
+      schema:
+        type: string
+      description: RFC3339 or YYYY-MM-DD (inclusive start)
+    to:
+      name: to
+      in: query
+      schema:
+        type: string
+      description: RFC3339 or YYYY-MM-DD (inclusive end of day when date-only)
+    level:
+      name: level
+      in: query
+      schema:
+        type: string
+        enum: [INFO, WARNING, ERROR, DEBUG]
+    source:
+      name: source
+      in: query
+      schema:
+        type: string
+    user_id:
+      name: user_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+    username:
+      name: username
+      in: query
+      schema:
+        type: string
+    request_id:
+      name: request_id
+      in: query
+      schema:
+        type: string
+    resource_type:
+      name: resource_type
+      in: query
+      schema:
+        type: string
+    action:
+      name: action
+      in: query
+      schema:
+        type: string
+    status:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [SUCCESS, FAILURE]
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+    format:
+      name: format
+      in: query
+      schema:
+        type: string
+        enum: [json, csv]
+        default: json
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+
+    DemoLogRequest:
+      type: object
+      properties:
+        message:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+
+    DemoAuditLoginRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+        username:
+          type: string
+        ip_address:
+          type: string
+
+    DemoAuditUpdateRequest:
+      type: object
+      properties:
+        user_id:
+          type: string
+        username:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        old_value:
+          type: object
+          additionalProperties: true
+        new_value:
+          type: object
+          additionalProperties: true
+
+    DemoStatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        id:
+          type: string
+          format: uuid
+          description: Present for audit demo endpoints
+
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        level:
+          type: string
+        message:
+          type: string
+        source:
+          type: string
+        request_id:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        error_code:
+          type: string
+        stack_trace:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        action:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        old_value:
+          type: object
+          additionalProperties: true
+        new_value:
+          type: object
+          additionalProperties: true
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+        request_id:
+          type: string
+        status:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: true
+        created_at:
+          type: string
+          format: date-time
+
+    LogListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/LogEntry"
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    AuditListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditEvent"
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string

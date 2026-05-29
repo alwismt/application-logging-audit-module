@@ -1,0 +1,104 @@
+@startuml class_diagram
+skinparam classAttributeIconSize 0
+
+interface Logger {
+  +Info(ctx, message, metadata)
+  +Warn(ctx, message, metadata)
+  +Error(ctx, message, err, metadata)
+  +Debug(ctx, message, metadata)
+}
+
+interface LogRepository {
+  +Insert(ctx, entry)
+  +Find(ctx, filter)
+  +FindByID(ctx, id)
+}
+
+interface Auditor {
+  +Record(ctx, event)
+  +Find(ctx, filter)
+}
+
+interface AuditRepository {
+  +Insert(ctx, event)
+  +Find(ctx, filter)
+  +FindByID(ctx, id)
+}
+
+class LoggerService {
+  -repo: LogRepository
+  -sanitizer: SensitiveDataSanitizer
+  +Info()
+  +Warn()
+  +Error()
+  +Debug()
+}
+
+class AuditService {
+  -repo: AuditRepository
+  -sanitizer: SensitiveDataSanitizer
+  +Record()
+  +Find()
+}
+
+class PostgresLogRepository {
+  -pool: PgxPool
+}
+
+class PostgresAuditRepository {
+  -pool: PgxPool
+}
+
+class SensitiveDataSanitizer {
+  +SanitizeMap(data)
+}
+
+class HTTPLoggerMiddleware {
+  -logger: LoggerService
+  +Middleware(next)
+}
+
+class JSONExporter {
+  +ExportLogsJSON()
+  +ExportAuditJSON()
+}
+
+class CSVExporter {
+  +ExportLogsCSV()
+  +ExportAuditCSV()
+}
+
+class Config {
+  +DatabaseURL
+  +ServiceName
+  +EnableConsoleLogging
+  +EnableDatabaseLogging
+}
+
+class LogEntry {
+  +ID
+  +Level
+  +Message
+  +Metadata
+}
+
+class AuditEvent {
+  +ID
+  +Action
+  +Status
+  +OldValue
+  +NewValue
+}
+
+Logger <|.. LoggerService
+LogRepository <|.. PostgresLogRepository
+Auditor <|.. AuditService
+AuditRepository <|.. PostgresAuditRepository
+LoggerService --> LogRepository
+LoggerService --> SensitiveDataSanitizer
+AuditService --> AuditRepository
+AuditService --> SensitiveDataSanitizer
+HTTPLoggerMiddleware --> LoggerService
+LoggerService ..> LogEntry
+AuditService ..> AuditEvent
+@enduml
